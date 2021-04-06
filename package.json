@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "serve": "node index",
+    "dev": "nodemon index",
+    "fake": "nodemon makeData.js"
   },
   "keywords": [],
   "author": "",
@@ -13,9 +15,11 @@
     "apollo-server": "^2.22.2",
     "graphql": "^15.5.0",
     "jsonwebtoken": "^8.5.1",
+    "mongodb": "^3.6.5",
     "mongoose": "^5.12.3"
   },
   "devDependencies": {
+    "faker": "^5.5.2",
     "nodemon": "^2.0.7"
   }
 }
