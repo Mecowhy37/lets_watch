@@ -5,7 +5,6 @@ module.exports = gql`
     id: ID!
     createdAt: String!
     username: String!
-    fullname: String!
     email: String!
     reviews: [Review]!
     watchlist: [String]!

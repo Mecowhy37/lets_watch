@@ -19,7 +19,6 @@ const generateUsers = async () => {
   for (let i = 1; i <= 3; i++) {
     const createdAt = faker.date.past();
     const username = faker.internet.userName();
-    const fullname = faker.name.findName();
     const email = faker.internet.email();
     const reviews = faker.random.array(1, 4, () => faker.datatype.number({ min: 1, max: 100 }));
     const watchlist = faker.random.array(1, 4, () => faker.datatype.number({ min: 1, max: 100 }));
@@ -27,7 +26,6 @@ const generateUsers = async () => {
     users.push({
       createdAt,
       username,
-      fullname,
       email,
       reviews,
       watchlist,
