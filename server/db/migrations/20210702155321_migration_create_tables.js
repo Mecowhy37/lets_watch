@@ -19,8 +19,8 @@ exports.up = function (knex) {
     })
     .createTable("grailist", function (table) {
       table.increments().primary();
-      table.integer("user_id_fk").references("id").inTable("users");
-      table.integer("movie_id_fk").references("id").inTable("movies");
+      table.integer("user_id_fk").notNullable().references("id").inTable("users");
+      table.integer("movie_id_fk").notNullable().references("id").inTable("movies");
     });
 };
 
