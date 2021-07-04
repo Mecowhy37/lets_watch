@@ -12,29 +12,20 @@ export default {
   },
   Mutation: {
     register: async (root, args, { req }, info) => {
-      // valitdate user
-      await registerValidate.validate(args);
-      //check if this user name doesnt already exist
-      let user = await db.select("*").from("users").where({ username: args.username });
-      console.log(user);
-      if (user.length > 0) {
-        throw new Error("This username is already taken");
+      const valid = registerValidate.validate(args);
+      console.log(valid.error.details);
+      if (valid.error) {
+        throw new Error(valid.error);
       }
-      user = await db.select("*").from("users").where({ phone: args.phone });
-      if (user.length > 0) {
-        throw new Error("Phone already registered");
+      try {
+        args.password = await bcrypt.hash(args.password, 10);
+        let [newUser] = await db("users").insert(args).returning("*");
+        let tokens = await issueTokens(newUser);
+        console.log("New user registered!", newUser);
+        return { user: newUser, ...tokens };
+      } catch (error) {
+        throw new Error(error.detail);
       }
-      //That means the registration is valid
-      args.password = await bcrypt.hash(args.password, 10);
-      let newUser = await db("users").insert(args).returning("*");
-      console.log(newUser);
-
-      // issue the token and refresh token
-      let tokens = await issueTokens(newUser);
-      return {
-        user: newUser,
-        ...tokens,
-      };
     },
   },
 };

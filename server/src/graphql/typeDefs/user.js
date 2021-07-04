@@ -15,7 +15,7 @@ export default gql`
     username: String!
     phone: String!
     password: String!
-    createdAt: String!
+    created_at: String!
   }
   type Auth {
     user: User!

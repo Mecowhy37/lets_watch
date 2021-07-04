@@ -19,10 +19,12 @@ async function getMovies() {
 }
 
 async function test() {
-  let user = await db.select("*").from("users").where({ username: "adsfasd" });
-  console.log(user);
+  // let user = await db.select("*").from("users").where({ username: "adsfasd" });
+  // console.log(user);
+  let newUser = await db("users").insert({ username: "miko", phone: "12345678", password: "1234" }).returning("*");
+  console.log(newUser);
 }
 
-test();
+// test();
 // getUsers();
-// getMovies();
+getMovies();

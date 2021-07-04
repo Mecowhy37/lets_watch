@@ -3,6 +3,7 @@ import Joi from "joi";
 const username = Joi.string().max(50).required().label("Username");
 const phone = Joi.string().max(10).min(8).required().label("Phone");
 const password = Joi.string()
+  .label("Phone")
   .max(50)
   .min(8)
   .required()

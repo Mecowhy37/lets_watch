@@ -2,8 +2,8 @@ exports.up = function (knex) {
   return knex.schema
     .createTable("users", function (table) {
       table.increments().primary();
-      table.string("username", 255).notNullable();
-      table.string("phone", 255).notNullable();
+      table.string("username", 255).notNullable().unique();
+      table.string("phone", 255).notNullable().unique();
       table.string("password", 255).notNullable();
       table.boolean("account_verified").notNullable().defaultTo(false);
       table.timestamp("created_at").defaultTo(knex.fn.now());
@@ -11,7 +11,7 @@ exports.up = function (knex) {
     })
     .createTable("movies", function (table) {
       table.increments().primary();
-      table.string("title", 255).notNullable();
+      table.string("title", 255).notNullable().unique();
       table.string("director", 255).notNullable();
       table.string("release_year", 255).notNullable();
       table.timestamp("created_at").defaultTo(knex.fn.now());
@@ -25,5 +25,5 @@ exports.up = function (knex) {
 };
 
 exports.down = function (knex) {
-  return knex.schema.dropTable("users").dropTable("movies").dropTable("grailist");
+  return knex.schema.dropTable("grailist").dropTable("users").dropTable("movies");
 };
