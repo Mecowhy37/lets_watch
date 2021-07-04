@@ -12,6 +12,8 @@ export default {
   },
   Mutation: {
     register: async (root, args, { req }, info) => {
+      //TODO: - better error handling and good responses
+      //      - check if username exist first
       const valid = registerValidate.validate(args);
       console.log(valid.error.details);
       if (valid.error) {
