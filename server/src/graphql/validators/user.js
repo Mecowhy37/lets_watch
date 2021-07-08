@@ -10,7 +10,7 @@ const password = Joi.string()
   .regex(/^(?=\S*[a-z])(?=\S*[A-Z])(?=\S*\d).*$/)
   .label("Password")
   .messages({
-    "string.regex": "Must have atleast one lowecase letterm one uppercasae letter and one digit.",
+    "string.pattern.base": "Must have atleast one lowecase letterm one uppercasae letter and one digit.",
   });
 
 export const loginValidate = Joi.object({

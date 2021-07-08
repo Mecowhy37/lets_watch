@@ -15,8 +15,8 @@ export default {
       //TODO: - better error handling and good responses
       //      - check if username exist first
       const valid = registerValidate.validate(args);
-      console.log(valid.error.details);
       if (valid.error) {
+        console.log(valid.error.details);
         throw new Error(valid.error);
       }
       try {
@@ -26,7 +26,7 @@ export default {
         console.log("New user registered!", newUser);
         return { user: newUser, ...tokens };
       } catch (error) {
-        throw new Error(error.detail);
+        throw new Error(error);
       }
     },
   },
