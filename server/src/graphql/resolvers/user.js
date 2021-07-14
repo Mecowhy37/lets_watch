@@ -60,7 +60,7 @@ export default {
         let otps = await createNewOtp(username, phone);
         console.log(otps.number);
         //send sms with otps.number
-        return { otp: otps.token };
+        return { otptoken: otps.token };
       }
     },
     register: async (root, { otp, token }, { req }, info) => {

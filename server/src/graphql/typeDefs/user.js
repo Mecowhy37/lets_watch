@@ -20,7 +20,7 @@ export default gql`
   type Checkup {
     username: String
     phone: String
-    otp: String
+    otptoken: String
   }
   type Auth {
     user: User!
