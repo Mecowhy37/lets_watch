@@ -4,7 +4,6 @@ exports.up = function (knex) {
       table.increments().primary();
       table.string("username", 255).notNullable().unique();
       table.string("phone", 255).notNullable().unique();
-      table.string("password", 255).notNullable();
       table.boolean("account_verified").notNullable().defaultTo(false);
       table.timestamp("created_at").defaultTo(knex.fn.now());
       table.timestamp("updated_at").defaultTo(knex.fn.now());

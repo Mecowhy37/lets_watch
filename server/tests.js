@@ -1,4 +1,7 @@
 const db = require("./db");
+let jwt = require("jsonwebtoken");
+let otpGenerator = require("otp-generator");
+let key = process.env.APP_SECRET;
 
 async function getUsers() {
   try {
@@ -21,10 +24,14 @@ async function getMovies() {
 async function test() {
   // let user = await db.select("*").from("users").where({ username: "adsfasd" });
   // console.log(user);
-  let newUser = await db("users").insert({ username: "miko", phone: "12345678", password: "1234" }).returning("*");
-  console.log(newUser);
+  try {
+    let newUser = await db("users").insert({ username: "mik", phone: "12345678" }).returning("*");
+    console.log(newUser);
+  } catch (err) {
+    throw new Error(err.constraint);
+  }
 }
 
 // test();
 // getUsers();
-getMovies();
+// getMovies();
