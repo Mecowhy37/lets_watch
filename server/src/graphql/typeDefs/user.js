@@ -5,7 +5,7 @@ export default gql`
     users: [User]!
     profile: User
     refreshToken: Auth!
-    login(username: String!): Auth!
+    login(username: String!, phone: String!): Auth!
   }
   extend type Mutation {
     getOtp(username: String!, phone: String): Checkup!

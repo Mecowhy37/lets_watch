@@ -18,4 +18,12 @@ const createNewOtp = async (username, phone) => {
   return { number, token };
 };
 
-export { issueTokens, createNewOtp };
+const getAuthUser = async (req, requiresAuth = false) => {
+  console.log(req);
+  if (header) {
+    let token = jwt.verify(header, key);
+    console.log("TOKEN_DECODED", token);
+  }
+};
+
+export { issueTokens, createNewOtp, getAuthUser };

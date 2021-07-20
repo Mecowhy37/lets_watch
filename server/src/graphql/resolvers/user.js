@@ -1,36 +1,33 @@
 import db from "../../../db";
 import { registerValidate } from "../validators";
-import { issueTokens, createNewOtp } from "../../functions/auth";
-import { defaultTypeResolver } from "graphql";
+import { issueTokens, createNewOtp, getAuthUser } from "../../functions/auth";
 let key = process.env.APP_SECRET;
 import jwt from "jsonwebtoken";
+
 export default {
   Query: {
     users: () => {},
-    profile: () => {},
-    login: () => {},
+    profile: async (root, args, { req }, info) => {
+      if (!(await getAuthUser(req, true))) {
+        throw new Error("User not authenticated");
+      }
+    },
+    login: async (root, args, { req }, info) => {
+      //TODO:now I'm treating phone num as password
+      let [user] = await db.select("*").from("users").where({ username: args.username });
+      if (!user) {
+        throw new Error("User not found");
+      }
+      if (user.phone !== args.phone) {
+        throw new Error("Wrong phone number");
+      }
+      let tokens = await issueTokens(user);
+      console.log("User logged in", user);
+      return { user: user, ...tokens };
+    },
     refreshToken: () => {},
   },
   Mutation: {
-    //   register: async (root, args, { req }, info) => {
-    //     //TODO: - better error handling and good responses
-    //     //      - check if username exist first
-    //     const valid = registerValidate.validate(args);
-    //     if (valid.error) {
-    //       console.log(valid.error.details);
-    //       throw new Error(valid.error);
-    //     }
-    //     try {
-    //       // args.password = await bcrypt.hash(args.password, 10);
-    //       let [newUser] = await db("users").insert(args).returning("*");
-    //       let tokens = await issueTokens(newUser);
-    //       console.log("New user registered!", newUser);
-    //       return { user: newUser, ...tokens };
-    //     } catch (error) {
-    //       throw new Error(error);
-    //     }
-    //   },
-    // },
     getOtp: async (root, { username, phone }, { req }, info) => {
       let [Checkup] = await db
         .select("username", "phone")
@@ -57,6 +54,7 @@ export default {
         }
         return result;
       } else {
+        // TODO: crypt otp
         let otps = await createNewOtp(username, phone);
         console.log(otps.number);
         //send sms with otps.number
@@ -87,15 +85,6 @@ export default {
       }
     },
   },
-  // try {
-  //   let [newUser] = await db("users").insert({ username, phone }).returning("*");
-  //   let tokens = await issueTokens(newUser);
-  //   console.log("New user registered!", newUser);
-  //   return { user: newUser, ...tokens };
-  // } catch (err) {
-  //   console.log(err.constraint);
-  //   throw new Error(err.constraint);
-  // }
   // Registering: {
   //   __resolveType: (obj) => {
   //     if (obj.token) {
