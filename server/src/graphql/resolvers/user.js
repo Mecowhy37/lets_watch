@@ -1,6 +1,6 @@
 import db from "../../../db";
 import { registerValidate } from "../validators";
-import { issueTokens, createNewOtp, getAuthUser } from "../../functions/auth";
+import { issueTokens, createNewOtp, getAuthUser, getRefreshTokenUser } from "../../functions/auth";
 let key = process.env.APP_SECRET;
 import jwt from "jsonwebtoken";
 
@@ -8,9 +8,8 @@ export default {
   Query: {
     users: () => {},
     profile: async (root, args, { req }, info) => {
-      if (!(await getAuthUser(req, true))) {
-        throw new Error("User not authenticated");
-      }
+      let authUser = await getAuthUser(req, true);
+      return authUser;
     },
     login: async (root, args, { req }, info) => {
       //TODO:now I'm treating phone num as password
@@ -25,7 +24,14 @@ export default {
       console.log("User logged in", user);
       return { user: user, ...tokens };
     },
-    refreshToken: () => {},
+    refreshToken: async (root, args, { req }, info) => {
+      let authUser = await getRefreshTokenUser(req);
+      let tokens = await issueTokens(authUser);
+      return {
+        user: authUser,
+        ...tokens,
+      };
+    },
   },
   Mutation: {
     getOtp: async (root, { username, phone }, { req }, info) => {
@@ -70,7 +76,7 @@ export default {
           try {
             let [newUser] = await db("users").insert({ username: decoded.username, phone: decoded.phone }).returning("*");
             let tokens = await issueTokens(newUser);
-            console.log("New user registered!", newUser);
+            console.log("New user registe`red!", newUser);
             return { user: newUser, ...tokens };
           } catch (err) {
             console.log(err.constraint);
@@ -85,15 +91,4 @@ export default {
       }
     },
   },
-  // Registering: {
-  //   __resolveType: (obj) => {
-  //     if (obj.token) {
-  //       return "Auth";
-  //     }
-  //     if (!obj.token) {
-  //       return "Checkup";
-  //     }
-  //     return null;
-  //   },
-  // },
 };
