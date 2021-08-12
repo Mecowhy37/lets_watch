@@ -1,35 +1,19 @@
+import { ApolloServer } from "apollo-server";
 import db from "../db";
-import express from "express";
 import typeDefs from "./graphql/typeDefs";
 import resolvers from "./graphql/resolvers";
-import { ApolloServer } from "apollo-server-express";
+const { getUserFromToken, createToken } = require("../src/functions/auth.js");
 
-async function startApolloServer() {
-  const app = express();
-  const PORT = 4000;
-  app.disable("x-powered-by");
-  const server = new ApolloServer({
-    typeDefs,
-    resolvers,
-    context: ({ req }) => {
-      return {
-        req,
-      };
-    },
-  });
-  await server.start();
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+  context: async ({ req }) => {
+    const token = req.headers.authorization;
+    const user = await getUserFromToken(token);
+    return { db, user, createToken };
+  },
+});
 
-  server.applyMiddleware({ app });
-
-  app.use((req, res) => {
-    res.status(200);
-    res.send("Hello!");
-    res.end();
-  });
-
-  await new Promise((resolve) => app.listen({ port: PORT }, resolve));
-  console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`);
-  return { server, app };
-}
-
-startApolloServer();
+server.listen(4000).then(({ url }) => {
+  console.log(`🚀 Server ready at ${url}`);
+});

@@ -1,54 +1,58 @@
-import jwt from "jsonwebtoken";
+const jwt = require("jsonwebtoken");
+let secret = process.env.APP_SECRET;
 import db from "../../db";
-import { AuthenticationError } from "apollo-server-express";
-import user from "../graphql/typeDefs/user";
 
-let otpGenerator = require("otp-generator");
-let key = process.env.APP_SECRET;
-let refKey = process.env.APP_REFRESH_SECRET;
+/**
+ * takes a user object and creates  jwt out of it
+ * using user.id and user.role
+ * @param {Object} user the user to create a jwt for
+ */
+const createToken = ({ id, role }) => jwt.sign({ id, role }, secret);
 
-const issueTokens = async ({ username, phone, id }) => {
-  let token = await jwt.sign({ username, phone, id }, process.env.APP_SECRET, { expiresIn: "1h" });
-  let refreshToken = await jwt.sign({ username, phone, id }, refKey, { expiresIn: "1d" });
-  return {
-    token,
-    refreshToken,
-  };
-};
-
-const createNewOtp = async (username, phone) => {
-  let number = otpGenerator.generate(6, { alphabets: false, upperCase: false, specialChars: false });
-  let token = await jwt.sign({ number, username, phone }, key, { expiresIn: "5m" });
-  return { number, token };
-};
-
-const getAuthUser = async (req, requiresAuth = false) => {
-  const header = req.headers.authorization;
-  if (header) {
-    const token = jwt.verify(header, key);
-    console.log("TOKEN_DECODED", token);
-    let [authUser] = await db.select("*").from("users").where({ id: token.id });
-    if (!authUser) {
-      throw new AuthenticationError("Invalid token, User authentication failed");
-    }
-    if (requiresAuth) {
-      return authUser;
-    }
+/**
+ * will attemp to verify a jwt and find a user in the
+ * db associated with it. Catches any error and returns
+ * a null user
+ * @param {String} token jwt from client
+ */
+const getUserFromToken = async (token) => {
+  try {
+    const detoken = await jwt.verify(token, secret);
+    const [user] = await db.select("*").from("users").where({ id: detoken.id });
+    return user;
+  } catch (e) {
     return null;
   }
 };
 
-const getRefreshTokenUser = async (req) => {
-  const header = req.headers.refresh_token;
-  if (header) {
-    const token = jwt.verify(header, refKey);
-    console.log("TOKEN_REFRESHED", token);
-    let [authUser] = await db.select("*").from("users").where({ id: token.id });
-    if (!authUser) {
-      throw new AuthenticationError("Invalid refresh token, User authentication failed");
-    }
-    return authUser;
+/**
+ * checks if the user is on the context object
+ * continues to the next resolver if true
+ * @param {Function} next next resolver function ro run
+ */
+const authenticated = (next) => (root, args, context, info) => {
+  if (!context.user) {
+    throw new Error("not authenticated");
   }
+  return next(root, args, context, info);
 };
 
-export { issueTokens, createNewOtp, getAuthUser, getRefreshTokenUser };
+/**
+ * checks if the user on the context has the specified role.
+ * continues to the next resolver if true
+ * @param {String} role enum role to check for
+ * @param {Function} next next resolver function to run
+ */
+const authorized = (role, next) => (root, args, context, info) => {
+  if (context.user.role !== role) {
+    throw new Error(`Must be a ${role}`);
+  }
+  next(root, args, context, info);
+};
+
+module.exports = {
+  getUserFromToken,
+  authenticated,
+  authorized,
+  createToken,
+};

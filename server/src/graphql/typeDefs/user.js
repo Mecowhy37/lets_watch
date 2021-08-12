@@ -1,32 +1,61 @@
-import { gql } from "apollo-server-express";
+import { gql } from "apollo-server";
 
 export default gql`
-  extend type Query {
-    users: [User]!
-    profile: User
-    refreshToken: Auth!
-    login(username: String!, phone: String!): Auth!
+  enum Role {
+    ADMIN
+    MEMBER
+    GUEST
   }
-  extend type Mutation {
-    getOtp(username: String!, phone: String): Checkup!
-    register(otp: String!, token: String!): Auth!
-  }
+
   type User {
     id: ID!
     username: String!
     phone: String!
     created_at: String!
   }
-  type Checkup {
-    username: String
-    phone: String
-    otptoken: String
+  type Movie {
+    id: ID!
+    title: String!
   }
-  type Auth {
+
+  type AuthUser {
     user: User!
     token: String!
-    refreshToken: String!
   }
-  # union Registering = Auth | Checkup
+  input SignupInput {
+    username: String!
+    phone: String!
+    role: Role!
+  }
+  input SigninInput {
+    username: String!
+    phone: String!
+  }
+  extend type Query {
+    profile: User!
+    # login(username: String!, phone: String!): Auth!
+    # watch_list: WatchList!
+    watch_list: [Movie]!
+  }
+  extend type Mutation {
+    signup(input: SignupInput!): AuthUser!
+    signin(input: SigninInput!): AuthUser!
+    addtowatchlist(title: String!): [Movie]!
+  }
 `;
-// Auth @include(if: phone)
+
+// type Checkup {
+//   username: String
+//   phone: String
+//   otptoken: String
+// }
+// type Auth {
+//   user: User!
+//   token: String!
+//   refreshToken: String!
+// }
+
+// extend type Mutation {
+//   getOtp(username: String!, phone: String): Checkup!
+//   register(otp: String!, token: String!): Auth!
+// }
