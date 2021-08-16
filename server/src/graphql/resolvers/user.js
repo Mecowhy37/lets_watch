@@ -11,11 +11,14 @@ export default {
     }),
     watch_list: authenticated(async (_, __, { db, user }) => {
       let watchList = await db.select("movies.id", "title", "grailist.updated_at").from("grailist").where({ user_id_fk: user.id }).join("movies", "grailist.movie_id_fk", "=", "movies.id");
-      let updated_at = watchList
-        .reduce((max, date) => (max.updated_at > date.votes ? max : date))
-        .updated_at.toISOString()
-        .replace(/T/, " ")
-        .replace(/\..+/, "");
+      let updated_at =
+        !watchList.length < 1
+          ? watchList
+              .reduce((max, date) => (max.updated_at > date.votes ? max : date))
+              .updated_at.toISOString()
+              .replace(/T/, " ")
+              .replace(/\..+/, "")
+          : "new list";
       let consoleList = watchList.map((el) => el.title);
       console.log(`THIS IS ${user.username.toUpperCase()}'S WATCHLIST`, consoleList, ` lastly updated at: ${updated_at}`);
       return { list: watchList, updated_at };
@@ -149,3 +152,11 @@ export default {
 //     }
 //   },
 // },
+
+// SELECT users.username,
+// 	   movies.title,
+// 	   grailist.updated_at
+// FROM grailist
+// JOIN users ON grailist.user_id_fk = users.id
+// JOIN movies on grailist.movie_id_fk = movies.id
+// ORDER BY users.id;
