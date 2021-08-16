@@ -1,4 +1,3 @@
-import db from "../../../db";
 const { authenticated, authorized } = require("../../functions/auth");
 // import { registerValidate } from "../validators";
 // import { issueTokens, createNewOtp, getAuthUser, getRefreshTokenUser } from "../../functions/auth";
@@ -11,9 +10,15 @@ export default {
       return user;
     }),
     watch_list: authenticated(async (_, __, { db, user }) => {
-      let watchList = await db.select("movies.id", "title").from("grailist").where({ user_id_fk: user.id }).join("movies", "grailist.movie_id_fk", "=", "movies.id");
-      console.log(`THIS IS ${user.username.toUpperCase()}'S WATCHLIST`, watchList);
-      return watchList;
+      let watchList = await db.select("movies.id", "title", "grailist.updated_at").from("grailist").where({ user_id_fk: user.id }).join("movies", "grailist.movie_id_fk", "=", "movies.id");
+      let updated_at = watchList
+        .reduce((max, date) => (max.updated_at > date.votes ? max : date))
+        .updated_at.toISOString()
+        .replace(/T/, " ")
+        .replace(/\..+/, "");
+      let consoleList = watchList.map((el) => el.title);
+      console.log(`THIS IS ${user.username.toUpperCase()}'S WATCHLIST`, consoleList, ` lastly updated at: ${updated_at}`);
+      return { list: watchList, updated_at };
     }),
   },
   Mutation: {
@@ -52,9 +57,15 @@ export default {
       } catch (e) {
         throw new Error(e);
       }
-      let watchList = await db.select("movies.id", "title").from("grailist").where({ user_id_fk: user.id }).join("movies", "grailist.movie_id_fk", "=", "movies.id");
-      console.log(`THIS IS ${user.username.toUpperCase()}'S WATCHLIST`, watchList);
-      return watchList;
+      let watchList = await db.select("movies.id", "title", "grailist.updated_at").from("grailist").where({ user_id_fk: user.id }).join("movies", "grailist.movie_id_fk", "=", "movies.id");
+      let updated_at = watchList
+        .reduce((max, date) => (max.updated_at > date.votes ? max : date))
+        .updated_at.toISOString()
+        .replace(/T/, " ")
+        .replace(/\..+/, "");
+      let consoleList = watchList.map((el) => el.title);
+      console.log(`THIS IS ${user.username.toUpperCase()}'S WATCHLIST`, consoleList, ` lastly updated at: ${updated_at}`);
+      return { list: watchList, updated_at };
     }),
   },
 };

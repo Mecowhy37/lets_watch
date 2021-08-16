@@ -22,6 +22,10 @@ export default gql`
     user: User!
     token: String!
   }
+  type WatchList {
+    list: [Movie]!
+    updated_at: String!
+  }
   input SignupInput {
     username: String!
     phone: String!
@@ -35,12 +39,12 @@ export default gql`
     profile: User!
     # login(username: String!, phone: String!): Auth!
     # watch_list: WatchList!
-    watch_list: [Movie]!
+    watch_list: WatchList!
   }
   extend type Mutation {
     signup(input: SignupInput!): AuthUser!
     signin(input: SigninInput!): AuthUser!
-    addtowatchlist(title: String!): [Movie]!
+    addtowatchlist(title: String!): WatchList!
   }
 `;
 

@@ -20,6 +20,9 @@ exports.up = function (knex) {
       table.increments().primary();
       table.integer("user_id_fk").notNullable().references("id").inTable("users");
       table.integer("movie_id_fk").notNullable().references("id").inTable("movies");
+      table.timestamp("updated_at").defaultTo(knex.fn.now());
+      table.boolean("watched").defaultTo(false);
+      table.boolean("deleted").defaultTo(false);
     });
 };
 
