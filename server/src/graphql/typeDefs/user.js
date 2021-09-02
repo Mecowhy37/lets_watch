@@ -26,6 +26,9 @@ export default gql`
     list: [Movie]!
     updated_at: String!
   }
+  type text {
+    text: String!
+  }
   input SignupInput {
     username: String!
     phone: String!
@@ -44,7 +47,7 @@ export default gql`
   extend type Mutation {
     signup(input: SignupInput!): AuthUser!
     signin(input: SigninInput!): AuthUser!
-    addtowatchlist(title: String!): WatchList!
+    addtowatchlist(title: String!): text!
   }
 `;
 

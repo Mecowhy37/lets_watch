@@ -8,18 +8,11 @@ exports.up = function (knex) {
       table.timestamp("created_at").defaultTo(knex.fn.now());
       table.timestamp("updated_at").defaultTo(knex.fn.now());
     })
-    .createTable("movies", function (table) {
-      table.increments().primary();
-      table.string("title", 255).notNullable().unique();
-      table.string("director", 255).notNullable();
-      table.string("release_year", 255).notNullable();
-      table.timestamp("created_at").defaultTo(knex.fn.now());
-      table.timestamp("updated_at").defaultTo(knex.fn.now());
-    })
     .createTable("grailist", function (table) {
       table.increments().primary();
       table.integer("user_id_fk").notNullable().references("id").inTable("users");
-      table.integer("movie_id_fk").notNullable().references("id").inTable("movies");
+      table.integer("movie_imdb_id").notNullable();
+      table.string("title", 255).notNullable();
       table.timestamp("updated_at").defaultTo(knex.fn.now());
       table.boolean("watched").defaultTo(false);
       table.boolean("deleted").defaultTo(false);

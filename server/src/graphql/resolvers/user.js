@@ -43,7 +43,6 @@ export default {
       return { user, token };
     },
     addtowatchlist: authenticated(async (_, { title }, { db, user }) => {
-      //#TODO: prevent adding the same movie twice to your watchlist, this is gonna be an try instert
       let [movieExist] = await db.select("*").from("movies").whereRaw(`title ILIKE '${title.toLowerCase()}'`);
 
       if (!movieExist) {
@@ -55,20 +54,12 @@ export default {
       if (alreadyAdded) {
         throw new Error("youve alredy added this movie");
       }
-      try {
-        await db("grailist").insert({ user_id_fk: user.id, movie_id_fk: movieExist.id }).returning("*");
-      } catch (e) {
-        throw new Error(e);
-      }
-      let watchList = await db.select("movies.id", "title", "grailist.updated_at").from("grailist").where({ user_id_fk: user.id }).join("movies", "grailist.movie_id_fk", "=", "movies.id");
-      let updated_at = watchList
-        .reduce((max, date) => (max.updated_at > date.votes ? max : date))
-        .updated_at.toISOString()
-        .replace(/T/, " ")
-        .replace(/\..+/, "");
-      let consoleList = watchList.map((el) => el.title);
-      console.log(`THIS IS ${user.username.toUpperCase()}'S WATCHLIST`, consoleList, ` lastly updated at: ${updated_at}`);
-      return { list: watchList, updated_at };
+      // try {
+      //   let Movie = await db("grailist").insert({ user_id_fk: user.id, movie_id_fk: movieExist.id }).returning("*");
+      // } catch (e) {
+      //   throw new Error(e);
+      // }
+      return { text: "A String!" };
     }),
   },
 };
