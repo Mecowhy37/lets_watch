@@ -11,7 +11,7 @@ exports.up = function (knex) {
     .createTable("grailist", function (table) {
       table.increments().primary();
       table.integer("user_id_fk").notNullable().references("id").inTable("users");
-      table.integer("movie_imdb_id").notNullable();
+      table.string("movie_imdb_id").notNullable();
       table.string("title", 255).notNullable();
       table.timestamp("updated_at").defaultTo(knex.fn.now());
       table.boolean("watched").defaultTo(false);
@@ -20,5 +20,5 @@ exports.up = function (knex) {
 };
 
 exports.down = function (knex) {
-  return knex.schema.dropTable("grailist").dropTable("users").dropTable("movies");
+  return knex.schema.dropTable("grailist").dropTable("users");
 };

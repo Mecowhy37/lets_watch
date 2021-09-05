@@ -14,8 +14,13 @@ export default gql`
     created_at: String!
   }
   type Movie {
-    id: ID!
     title: String!
+  }
+  type MovieSearch {
+    Title: String
+    Year: String
+    imdbID: String
+    Poster: String
   }
 
   type AuthUser {
@@ -26,28 +31,24 @@ export default gql`
     list: [Movie]!
     updated_at: String!
   }
-  type text {
-    text: String!
-  }
+
   input SignupInput {
     username: String!
     phone: String!
-    role: Role!
   }
   input SigninInput {
     username: String!
-    phone: String!
+    # phone: String!
   }
   extend type Query {
     profile: User!
-    # login(username: String!, phone: String!): Auth!
-    # watch_list: WatchList!
     watch_list: WatchList!
+    searchtowatchlist(title: String!): [MovieSearch]!
   }
   extend type Mutation {
     signup(input: SignupInput!): AuthUser!
     signin(input: SigninInput!): AuthUser!
-    addtowatchlist(title: String!): text!
+    addtowatchlist(imdbID: String!): Movie!
   }
 `;
 
