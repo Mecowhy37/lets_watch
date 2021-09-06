@@ -15,7 +15,6 @@ exports.up = function (knex) {
       table.string("title", 255).notNullable();
       table.timestamp("updated_at").defaultTo(knex.fn.now());
       table.boolean("watched").defaultTo(false);
-      table.boolean("deleted").defaultTo(false);
     });
 };
 

@@ -2,9 +2,8 @@ import { gql } from "apollo-server";
 
 export default gql`
   enum Role {
-    ADMIN
-    MEMBER
     GUEST
+    ADMIN
   }
 
   type User {
@@ -13,8 +12,18 @@ export default gql`
     phone: String!
     created_at: String!
   }
+
   type Movie {
     title: String!
+    movie_imdb_id: String!
+    watched: Boolean!
+  }
+  type FlashRoom {
+    id: ID!
+    name: String!
+    code: String!
+    users: [User!]!
+    movies: [Movie]!
   }
   type MovieSearch {
     Title: String
@@ -22,7 +31,6 @@ export default gql`
     imdbID: String
     Poster: String
   }
-
   type AuthUser {
     user: User!
     token: String!
@@ -31,7 +39,11 @@ export default gql`
     list: [Movie]!
     updated_at: String!
   }
-
+  type Room {
+    number: String!
+    users: [User]!
+    admin: User!
+  }
   input SignupInput {
     username: String!
     phone: String!
@@ -44,11 +56,15 @@ export default gql`
     profile: User!
     watch_list: WatchList!
     searchtowatchlist(title: String!): [MovieSearch]!
+    getrooms: [Room]!
   }
   extend type Mutation {
     signup(input: SignupInput!): AuthUser!
     signin(input: SigninInput!): AuthUser!
     addtowatchlist(imdbID: String!): Movie!
+    markwatched(imdbID: String!): Movie!
+    delete(imdbID: String!): Movie!
+    createroom: Room!
   }
 `;
 

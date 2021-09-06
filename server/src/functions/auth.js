@@ -19,7 +19,7 @@ const getUserFromToken = async (token) => {
   try {
     const detoken = await jwt.verify(token, secret);
     const [user] = await db.select("*").from("users").where({ id: detoken.id });
-    return user;
+    return { ...user, role: detoken.role };
   } catch (e) {
     return null;
   }
