@@ -42,7 +42,6 @@ export default gql`
   type Room {
     number: String!
     users: [User]!
-    admin: User!
   }
   input SignupInput {
     username: String!
@@ -51,6 +50,9 @@ export default gql`
   input SigninInput {
     username: String!
     # phone: String!
+  }
+  type text {
+    text: String!
   }
   extend type Query {
     profile: User!
@@ -65,6 +67,10 @@ export default gql`
     markwatched(imdbID: String!): Movie!
     delete(imdbID: String!): Movie!
     createroom: Room!
+    joinroom(roomID: String!): User!
+  }
+  type Subscription {
+    userJoined(roomID: String!): User
   }
 `;
 

@@ -9,11 +9,14 @@ const rooms = [];
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  context: async ({ req }) => {
+  context: async ({ req, connection }) => {
     //auth will have to check if users arent in other rooms ect
-    const token = req.headers.authorization;
+    let token = connection ? connection.context.Authorization : req.headers.authorization;
     const user = await getUserFromToken(token);
-    return { db, user, createToken, rooms };
+    // const room = rooms.find((ro) => ro.users.find((u) => u.id === user.id));
+    // console.log(room);
+    const roomIDs = rooms.map((ro) => ro.number);
+    return { db, user, createToken, roomIDs };
   },
 });
 
