@@ -24,7 +24,7 @@ export default {
     signup: async (_, { input }, { db, createToken }) => {
       const [existing] = await db.select("*").from("users").where({ phone: input.phone });
       if (existing) {
-        throw new Error("nope");
+        throw new Error("user already registered");
       }
       const [user] = await db("users").insert({ username: input.username, phone: input.phone }).returning("*");
       const token = createToken(user);

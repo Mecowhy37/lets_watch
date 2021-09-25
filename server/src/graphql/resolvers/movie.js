@@ -5,7 +5,7 @@ export default {
   Query: {
     watch_list: authenticated(async (_, __, { db, user }) => {
       // let watchList = await db.select("title", "movie_imdb_id", "grailist.updated_at", "watched").from("grailist").where({ user_id_fk: user.id, watched: false });
-      let watchList = await db.select("title", "movie_imdb_id", "grailist.updated_at", "watched").from("grailist").where({ user_id_fk: user.id });
+      let watchList = await db.select("title", "movie_imdb_id", "grailist.updated_at", "watched").from("grailist").where({ user_id_fk: user.id, watched: false });
       let updated_at =
         !watchList.length < 1
           ? watchList
